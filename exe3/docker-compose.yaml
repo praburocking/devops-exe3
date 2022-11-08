@@ -1,0 +1,55 @@
+version: "3.9"
+services:
+  httpserver:
+    build: httpserver/.
+    expose:
+      - "8080"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - observ
+    networks:
+      backend:
+    volumes:
+      - web_data:/usr/data/ro
+  
+  imed:
+    build: imed/.
+    depends_on:
+      - orig
+    networks:
+      backend:
+
+  orig:
+    build: orig/.
+    depends_on:
+      - rabitmq 
+    networks:
+      backend:
+
+  observ:
+    build: observ/.
+    depends_on:
+      - imed
+    networks:
+      backend:
+    volumes:
+      - web_data:/usr/data
+    
+  rabitmq:
+    image: rabbitmq:3.10-management
+    networks:
+      backend:
+  
+
+
+networks:
+      backend:
+volumes:
+  web_data:
+   
+
+  #sudo docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.10-management
+ 
+
+ 
