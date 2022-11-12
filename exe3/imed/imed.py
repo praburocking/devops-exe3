@@ -4,10 +4,25 @@ import time
 
 
 HOST="exe3-rabitmq-1"
+#HOST="localhost"
 ROUTING_KEY1="compse140.o"
 ROUTING_KEY2="compse140.i"
 EXCHANGE='topic_msg'
-time.sleep(50)
+
+print("imed pre check ........")
+def is_port_in_use(port: int) -> bool:
+    import socket
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        return s.connect_ex((HOST, port)) == 0
+
+# sleep util the rabit mq is active to accept the client.
+while True:
+	if not is_port_in_use(5672):
+		time.sleep(2)
+	else:
+		print("imed started ........")
+		break
+
 def main():
     connection = pika.BlockingConnection(pika.ConnectionParameters(host=HOST))
     channel = connection.channel()

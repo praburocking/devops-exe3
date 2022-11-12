@@ -31,17 +31,35 @@
 #             os._exit(0)
 
 
+
+
+
 import pika
 import sys
 from datetime import datetime
 import time
 
-time.sleep(50)
 
 HOST="exe3-rabitmq-1"
 ROUTING_KEY1="compse140.o"
 ROUTING_KEY2="compse140.i"
 EXCHANGE='topic_msg'
+
+
+print("observe pre-check-----------")
+def is_port_in_use(port: int) -> bool:
+    import socket
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        return s.connect_ex((HOST, port)) == 0
+
+# sleep util the rabit mq is active to accept the client.
+while True:
+	if not is_port_in_use(5672):
+		time.sleep(2)
+	else:
+		print("observ started ........")
+		break
+time.sleep(5)
 
 connection = pika.BlockingConnection(
     pika.ConnectionParameters(host=HOST))
@@ -52,18 +70,21 @@ channel.exchange_declare(exchange=EXCHANGE, exchange_type='topic')
 channel.queue_declare('#')
 
 
-print(' [*] Waiting for logs. To exit press CTRL+C')
+# print(' [*] Waiting for logs. To exit press CTRL+C')
 temp_counter=1
-temp_file= open("/usr/data/temp_file.txt", "w")
+# temp_file= open("/usr/data/temp_file.txt", "w",encoding='utf-8')
+
+
+
 
 
 def callback(ch, method, properties, body):
     dt = datetime.now()	
     temp_str=str(dt)+" "+str(temp_counter)+" "+str(body)+" "+method.routing_key+"\n"
-    temp_file.write(temp_str)
-    print("********"+temp_Str)
+    #temp_file.write(temp_str)
+    print("********"+temp_str)
     
-temp_file.close()
+# #temp_file.close()
 
 channel.basic_consume(
     queue='#', on_message_callback=callback, auto_ack=True)
