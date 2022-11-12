@@ -5,17 +5,12 @@ from fastapi.responses import PlainTextResponse
 import uvicorn
 
 app = FastAPI()
-
+FILE_PATH="/usr/data/temp_file.txt"
 
 @app.get("/", response_class=PlainTextResponse)
 def read_root():
-	f = open("/usr/data/temp_file.txt", "r")
+	f = open(FILE_PATH, "r")
 	return str(f.read())
-
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
     
     
 if __name__ == "__main__":

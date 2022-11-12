@@ -23,8 +23,9 @@ while True:
 		break
 
 connection = pika.BlockingConnection(pika.ConnectionParameters(HOST))
-
 channel = connection.channel()
+
+#create the quque and bind it with exchanges
 channel.exchange_declare(exchange=EXCHANGE, exchange_type='topic')
 channel.queue_declare(queue=ROUTING_KEY1)
 channel.queue_bind(exchange=EXCHANGE, queue=ROUTING_KEY1, routing_key=ROUTING_KEY1)
@@ -40,19 +41,3 @@ for i in range(N):
 
 connection.close()
 
-
-# import pika
-# import sys
-
-# connection = pika.BlockingConnection(
-#     pika.ConnectionParameters(host='localhost'))
-# channel = connection.channel()
-
-# channel.exchange_declare(exchange='topic_logs', exchange_type='topic')
-
-# routing_key = sys.argv[1] if len(sys.argv) > 2 else 'anonymous.info'
-# message = ' '.join(sys.argv[2:]) or 'Hello World!'
-# channel.basic_publish(
-#     exchange='topic_logs', routing_key=routing_key, body=message)
-# print(" [x] Sent %r:%r" % (routing_key, message))
-# connection.close()
